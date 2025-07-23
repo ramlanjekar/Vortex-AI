@@ -1,0 +1,12 @@
+[project]
+name = "Vortex AI"
+version = "1.0.0"
+description = "A modular, multi-agent trading simulation platform."
+readme = "README.md"
+requires-python = ">=3.8"
+
+[tool.pdm]
+# If using PDM, otherwise ignore
+
+[tool.poetry]
+# If using Poetry, otherwise ignore 

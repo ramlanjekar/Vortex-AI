@@ -1,0 +1,8 @@
+gradio
+plotly
+pydantic
+python-dotenv
+requests
+sqlite3
+polygon-api-client
+asyncio 

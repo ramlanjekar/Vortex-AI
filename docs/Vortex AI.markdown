@@ -6,7 +6,6 @@ The **Vortex AI** is a sophisticated multi-agent trading simulation designed to 
 
 The platform simulates four distinct traders—Warren, George, Ray, and Cathie—each inspired by renowned investors (Warren Buffett, George Soros, Ray Dalio, and Cathie Wood) with unique investment strategies. It leverages modern technologies, including asynchronous Python, SQLite for data persistence, and a Model Context Protocol (MCP) for agent communication, ensuring scalability and robustness.
 
-This report provides a comprehensive overview of the project, including its architecture, functionality, technical details, and potential interview questions, preparing you to confidently present and discuss the project.
 
 ---
 

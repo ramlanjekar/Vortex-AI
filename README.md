@@ -184,15 +184,6 @@ USE_MANY_MODELS=true  # Use different models per trader
 - 🔐 Authentication & multi-user support
 - ⚡ PostgreSQL migration for production scale
 
-## 🤝 Contributing
-
-Contributions are welcome! Whether it's:
-- 🐛 Bug fixes
-- ✨ New features
-- 📖 Documentation improvements
-- 🎨 UI enhancements
-
-Please open an issue or submit a pull request.
 
 ## 📄 License
 
@@ -213,3 +204,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ⭐ Star this repo if you find it useful!
 
 </div>
+

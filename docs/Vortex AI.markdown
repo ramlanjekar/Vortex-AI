@@ -214,7 +214,7 @@ Each trader follows a unique strategy defined in `reset.py`:
 
 ---
 
-## 7. Potential Interview Questions and Answers
+## 7. Frequent Questions and Answers
 
 ### 7.1 General Questions
 **Q: What is the purpose of the Vortex AI?**

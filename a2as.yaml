@@ -1,0 +1,555 @@
+manifest:
+  version: "0.1.2"
+  schema: https://a2as.org/cert/schema
+  subject:
+    name: ramlanjekar/vortex-ai
+    source: https://github.com/ramlanjekar/vortex-ai
+    branch: main
+    commit: "8a3b1dd4"
+    scope: [src/accounts_client.py, src/accounts_server.py, src/market_server.py, src/mcp_params.py, src/push_server.py, src/templates.py,
+      src/tracers.py, src/traders.py]
+  issued:
+    by: A2AS.org
+    at: '2026-01-26T16:16:20Z'
+  signatures:
+    digest: sha256:-Uv0Pl8NRFpRTdfQLOI_S1N-fCUwe2H5GW8HmXlZLFo
+    key: ed25519:JzzfLEDJRISRzti1gyyllIB1jnHTyviu3BsDy2ODnjw
+    sig: ed25519:NVynRD4WsoaHhItCVRo-G3ldbUCmS_xrq4hW499gV4PHowOhOrKjdsEvS2z2PSYG_wHJDAo2mKDdRzaTxFRTAg
+
+agents:
+  agent.Trader.agent:
+    type: class
+    models: [get_model]
+    tools: [tool]
+    mcp: [trader_mcp_servers]
+    params:
+      class: Trader
+      name: self.name
+      instructions: [trader_instructions(self.name)]
+  researcher:
+    type: instance
+    models: [get_model]
+    mcp: [mcp_servers]
+    params:
+      function: get_researcher
+      name: Researcher
+      instructions: [researcher_instructions()]
+
+models:
+  get_model:
+    type: function
+    agents: [researcher, agent.Trader.agent]
+
+tools:
+  openai_tool:
+    type: wrapper
+  tool:
+    type: variable
+    agents: [agent.Trader.agent]
+    params:
+      dynamic: "True"
+
+mcp:
+  mcp_servers:
+    type: process
+    agents: [researcher]
+    params:
+      dynamic: "True"
+  trader_mcp_servers:
+    type: process
+    agents: [agent.Trader.agent]
+    params:
+      dynamic: "True"
+
+imports:
+  Account: accounts.Account
+  add_trace_processor: agents.add_trace_processor
+  Agent: agents.Agent
+  AsyncExitStack: contextlib.AsyncExitStack
+  asyncio: asyncio
+  AsyncOpenAI: openai.AsyncOpenAI
+  BaseModel: pydantic.BaseModel
+  Color: util.Color
+  css: util.css
+  datetime: datetime.datetime
+  FastMCP: mcp.server.fastmcp.FastMCP
+  Field: pydantic.Field
+  FunctionTool: agents.FunctionTool
+  get_share_price: market.get_share_price
+  gr: gradio
+  is_market_open: market.is_market_open
+  is_paid_polygon: market.is_paid_polygon
+  is_realtime_polygon: market.is_realtime_polygon
+  js: util.js
+  json: json
+  lastnames: trading_floor.lastnames
+  List: typing.List
+  load_dotenv: dotenv.load_dotenv
+  LogTracer: tracers.LogTracer
+  lru_cache: functools.lru_cache
+  make_trace_id: tracers.make_trace_id
+  mcp: mcp
+  MCPServerStdio: agents.mcp.MCPServerStdio
+  names: trading_floor.names
+  OpenAIChatCompletionsModel: agents.OpenAIChatCompletionsModel
+  os: os
+  pd: pandas
+  px: plotly.express
+  random: random
+  read_accounts_resource: accounts_client.read_accounts_resource
+  read_log: database.read_log
+  read_market: database.read_market
+  read_strategy_resource: accounts_client.read_strategy_resource
+  rebalance_message: templates.rebalance_message
+  requests: requests
+  research_tool: templates.research_tool
+  researcher_instructions: templates.researcher_instructions
+  researcher_mcp_server_params: mcp_params.researcher_mcp_server_params
+  RESTClient: polygon.RESTClient
+  Runner: agents.Runner
+  secrets: secrets
+  short_model_names: trading_floor.short_model_names
+  Span: agents.Span
+  sqlite3: sqlite3
+  stdio_client: mcp.client.stdio.stdio_client
+  StdioServerParameters: mcp.StdioServerParameters
+  string: string
+  timezone: datetime.timezone
+  Tool: agents.Tool
+  trace: agents.trace
+  Trace: agents.Trace
+  TracingProcessor: agents.TracingProcessor
+  trade_message: templates.trade_message
+  Trader: traders.Trader
+  trader_instructions: templates.trader_instructions
+  trader_mcp_server_params: mcp_params.trader_mcp_server_params
+  write_log: database.write_log
+  write_market: database.write_market
+
+functions:
+  __init__:
+    type: sync
+    module: src.app
+    args: [self, trader]
+  buy_shares:
+    type: async
+    module: src.accounts_server
+    args: [name, symbol, quantity, rationale]
+    params:
+      returns: float
+  call_accounts_tool:
+    type: async
+    module: src.accounts_client
+    args: [tool_name, tool_args]
+  change_strategy:
+    type: async
+    module: src.accounts_server
+    args: [name, strategy]
+    params:
+      returns: str
+  create_agent:
+    type: async
+    module: src.traders
+    args: [self, trader_mcp_servers, researcher_mcp_servers]
+    params:
+      returns: Agent
+  create_traders:
+    type: sync
+    module: src.trading_floor
+    params:
+      returns: List[Trader]
+  create_ui:
+    type: sync
+    module: src.app
+  force_flush:
+    type: sync
+    module: src.tracers
+    args: [self]
+    params:
+      returns: None
+  get_account_report:
+    type: async
+    module: src.traders
+    args: [self]
+    params:
+      returns: str
+  get_accounts_tools_openai:
+    type: async
+    module: src.accounts_client
+  get_all_share_prices_polygon_eod:
+    type: sync
+    module: src.market
+    params:
+      returns: dict
+  get_balance:
+    type: async
+    module: src.accounts_server
+    args: [name]
+    params:
+      returns: float
+  get_holdings:
+    type: async
+    module: src.accounts_server
+    args: [name]
+    params:
+      returns: dict
+  get_holdings_df:
+    type: sync
+    module: src.app
+    args: [self]
+    params:
+      returns: pd.DataFrame
+  get_logs:
+    type: sync
+    module: src.app
+    args: [self, previous]
+    params:
+      returns: str
+  get_market_for_prior_date:
+    type: sync
+    module: src.market
+    args: [today]
+  get_model:
+    type: sync
+    module: src.traders
+    args: [model_name]
+  get_name:
+    type: sync
+    module: src.tracers
+    args: [self, trace_or_span]
+  get_portfolio_value:
+    type: sync
+    module: src.app
+    args: [self]
+    params:
+      returns: str
+  get_portfolio_value_chart:
+    type: sync
+    module: src.app
+    args: [self]
+  get_portfolio_value_df:
+    type: sync
+    module: src.app
+    args: [self]
+    params:
+      returns: pd.DataFrame
+  get_researcher:
+    type: async
+    module: src.traders
+    args: [mcp_servers, model_name]
+    params:
+      returns: Agent
+  get_researcher_tool:
+    type: async
+    module: src.traders
+    args: [mcp_servers, model_name]
+    params:
+      returns: Tool
+  get_share_price:
+    type: sync
+    module: src.market
+    args: [symbol]
+    params:
+      returns: float
+  get_share_price_polygon:
+    type: sync
+    module: src.market
+    args: [symbol]
+    params:
+      returns: float
+  get_share_price_polygon_eod:
+    type: sync
+    module: src.market
+    args: [symbol]
+    params:
+      returns: float
+  get_share_price_polygon_min:
+    type: sync
+    module: src.market
+    args: [symbol]
+    params:
+      returns: float
+  get_strategy:
+    type: sync
+    module: src.app
+    args: [self]
+    params:
+      returns: str
+  get_title:
+    type: sync
+    module: src.app
+    args: [self]
+    params:
+      returns: str
+  get_transactions_df:
+    type: sync
+    module: src.app
+    args: [self]
+    params:
+      returns: pd.DataFrame
+  is_market_open:
+    type: sync
+    module: src.market
+    params:
+      returns: bool
+  list_accounts_tools:
+    type: async
+    module: src.accounts_client
+  lookup_share_price:
+    type: async
+    module: src.market_server
+    args: [symbol]
+    params:
+      returns: float
+  make_trace_id:
+    type: sync
+    module: src.tracers
+    args: [tag]
+    params:
+      returns: str
+  make_ui:
+    type: sync
+    module: src.app
+    args: [self]
+  on_span_end:
+    type: sync
+    module: src.tracers
+    args: [self, span]
+    params:
+      returns: None
+  on_span_start:
+    type: sync
+    module: src.tracers
+    args: [self, span]
+    params:
+      returns: None
+  on_trace_end:
+    type: sync
+    module: src.tracers
+    args: [self, trace]
+    params:
+      returns: None
+  on_trace_start:
+    type: sync
+    module: src.tracers
+    args: [self, trace]
+    params:
+      returns: None
+  push:
+    type: sync
+    module: src.push_server
+    args: [args]
+  read_account:
+    type: sync
+    module: src.database
+    args: [name]
+  read_account_resource:
+    type: async
+    module: src.accounts_server
+    args: [name]
+    params:
+      returns: str
+  read_accounts_resource:
+    type: async
+    module: src.accounts_client
+    args: [name]
+  read_log:
+    type: sync
+    module: src.database
+    args: [name, last_n]
+  read_market:
+    type: sync
+    module: src.database
+    args: [date]
+  read_strategy_resource:
+    type: async
+    module: src.accounts_client
+    args: [name]
+  rebalance_message:
+    type: sync
+    module: src.templates
+    args: [name, strategy, account]
+  refresh:
+    type: sync
+    module: src.app
+    args: [self]
+  reload:
+    type: sync
+    module: src.app
+    args: [self]
+  research_tool:
+    type: sync
+    module: src.templates
+  researcher_instructions:
+    type: sync
+    module: src.templates
+  researcher_mcp_server_params:
+    type: sync
+    module: src.mcp_params
+    args: [name]
+  run:
+    type: async
+    module: src.traders
+    args: [self]
+  run_agent:
+    type: async
+    module: src.traders
+    args: [self, trader_mcp_servers, researcher_mcp_servers]
+  run_every_n_minutes:
+    type: async
+    module: src.trading_floor
+  run_with_mcp_servers:
+    type: async
+    module: src.traders
+    args: [self]
+  run_with_trace:
+    type: async
+    module: src.traders
+    args: [self]
+  sell_shares:
+    type: async
+    module: src.accounts_server
+    args: [name, symbol, quantity, rationale]
+    params:
+      returns: float
+  shutdown:
+    type: sync
+    module: src.tracers
+    args: [self]
+    params:
+      returns: None
+  trade_message:
+    type: sync
+    module: src.templates
+    args: [name, strategy, account]
+  trader_instructions:
+    type: sync
+    module: src.templates
+    args: [name]
+  write_account:
+    type: sync
+    module: src.database
+    args: [name, account_dict]
+  write_log:
+    type: sync
+    module: src.database
+    args: [name, type, message]
+  write_market:
+    type: sync
+    module: src.database
+    args: [date, data]
+    params:
+      returns: None
+
+variables:
+  BRAVE_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.mcp_params]
+  DEEPSEEK_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.traders]
+  GOOGLE_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.traders]
+  GROK_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.traders]
+  OPENROUTER_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.traders]
+  POLYGON_API_KEY:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.market, src.mcp_params]
+  POLYGON_PLAN:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.market]
+  PUSHOVER_TOKEN:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.push_server]
+  PUSHOVER_USER:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.push_server]
+  RUN_EVEN_WHEN_MARKET_IS_CLOSED:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.trading_floor]
+  RUN_EVERY_N_MINUTES:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.trading_floor]
+  USE_MANY_MODELS:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [src.trading_floor]
+
+processes:
+  uv:
+    type: mcp
+    actions: [exec]
+    args: [[run, accounts_server.py]]
+    params:
+      caller: [StdioServerParameters]
+      shell: ["False"]
+
+networks:
+  api.deepseek.com:
+    type: api
+    actions: [GET]
+    urls: [/v1]
+    protocols: [https]
+    ports: ["443"]
+    params:
+      caller: [AsyncOpenAI]
+  api.pushover.net:
+    type: api
+    actions: [POST]
+    urls: [/1/messages.json]
+    protocols: [https]
+    ports: ["443"]
+    params:
+      caller: [push]
+  api.x.ai:
+    type: api
+    actions: [GET]
+    urls: [/v1]
+    protocols: [https]
+    ports: ["443"]
+    params:
+      caller: [AsyncOpenAI]
+  generativelanguage.googleapis.com:
+    type: api
+    actions: [GET]
+    urls: [/v1beta/openai/]
+    protocols: [https]
+    ports: ["443"]
+    params:
+      caller: [AsyncOpenAI]
+  openrouter.ai:
+    type: api
+    actions: [GET]
+    urls: [/api/v1]
+    protocols: [https]
+    ports: ["443"]
+    params:
+      caller: [AsyncOpenAI]
